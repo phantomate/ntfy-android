@@ -26,6 +26,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -291,18 +292,25 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         mainList = findViewById(R.id.detail_notification_list)
         mainList.adapter = adapter
 
+        val layoutManager = mainList.layoutManager as LinearLayoutManager
+        mainListContainer.setOnChildScrollUpCallback { _, _ ->
+            // Pull to refresh only at the oldest message, above the rest of the history.
+            val oldest = layoutManager.findViewByPosition(adapter.itemCount - 1)
+            adapter.itemCount > 0 && (oldest == null || layoutManager.getDecoratedTop(oldest) < mainList.paddingTop)
+        }
+
         // Observe filtered notifications (filtered by search query)
         val noSearchResultsText: TextView = findViewById(R.id.detail_no_notifications_text)
         val howToIntro: View = findViewById(R.id.detail_how_to_intro)
         val howToLink: View = findViewById(R.id.detail_how_to_link)
         viewModel.listFiltered(subscriptionId).observe(this) {
             it?.let { notifications ->
-                val newestId = notifications.lastOrNull()?.id
-                val followNewMessages = newestId != null && newestId != adapter.currentList.lastOrNull()?.id &&
+                val newestId = notifications.firstOrNull()?.id
+                val followNewMessages = newestId != null && newestId != adapter.currentList.firstOrNull()?.id &&
                     mainList.childCount > 0 && !mainList.canScrollVertically(1)
                 adapter.submitList(notifications) {
                     if (followNewMessages && !mainList.canScrollVertically(1)) {
-                        mainList.scrollToPosition(notifications.lastIndex)
+                        mainList.scrollToPosition(0)
                     }
                 }
                 if (notifications.isEmpty()) {

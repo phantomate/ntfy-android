@@ -7,7 +7,7 @@
     style="@style/TopicCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/topic_card_gap"
+    android:layout_marginBottom="@dimen/message_card_gap"
     android:clickable="true"
     android:focusable="true">
 
@@ -17,12 +17,15 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:orientation="vertical"
-        android:padding="@dimen/topic_card_padding">
+        android:paddingStart="@dimen/topic_card_padding"
+        android:paddingEnd="@dimen/topic_card_padding"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -31,6 +34,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:includeFontPadding="false"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 tools:text="26.11.26, 15:35" />
@@ -61,7 +65,7 @@
             <ImageButton
                 android:id="@+id/detail_item_menu_button"
                 android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/detail_item_menu_options"
                 app:srcCompat="@drawable/ic_more_horiz_gray_24dp"
