@@ -68,13 +68,15 @@
     </style>
 
     <style name="FloatingActionButton" parent="@style/Widget.Material3.FloatingActionButton.Primary">
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="tint">?attr/colorOnPrimary</item>
+        <item name="backgroundTint">?attr/colorPrimaryContainer</item>
+        <item name="tint">?attr/colorOnPrimaryContainer</item>
     </style>
 
-    <style name="CardView" parent="@style/Widget.Material3.CardView.Elevated" />
-
-    <style name="CardViewBackground" />
+    <style name="TopicCard" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/topic_card_background</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
+    </style>
 
     <!-- Rounded corners in images, see https://stackoverflow.com/a/61960983/1440785 -->
     <style name="roundedCornersImageView" parent="">

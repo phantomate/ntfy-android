@@ -69,15 +69,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         serviceManager = SubscriberServiceManager(this)
 
         val toolbarLayout = findViewById<View>(R.id.app_bar_drawer)
-        val dynamicColors = repository.getDynamicColorsEnabled()
-        val darkMode = isDarkThemeOn(this)
-        val statusBarColor = Colors.statusBarNormal(
-            this,
-            dynamicColors,
-            darkMode
-        )
-        val toolbarTextColor = Colors.toolbarTextColor(this, dynamicColors, darkMode)
-        toolbarLayout.setBackgroundColor(statusBarColor)
+        val toolbarTextColor = Colors.toolbarTextColor(this)
         
         val toolbar = toolbarLayout.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         toolbar.setTitleTextColor(toolbarTextColor)
@@ -87,7 +79,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         
         // Set system status bar appearance
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
-            Colors.shouldUseLightStatusBar(dynamicColors, darkMode)
+            !isDarkThemeOn(this)
 
         if (savedInstanceState == null) {
             settingsFragment = SettingsFragment() // Empty constructor!

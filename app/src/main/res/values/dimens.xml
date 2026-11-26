@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="topic_list_margin">16dp</dimen>
+    <dimen name="topic_card_gap">8dp</dimen>
+    <dimen name="topic_card_padding">16dp</dimen>
+    <dimen name="message_title_gap">8dp</dimen>
 </resources>

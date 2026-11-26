@@ -62,11 +62,7 @@ class ShareActivity : AppCompatActivity() {
 
         // Action bar
         val toolbarLayout = findViewById<View>(R.id.app_bar_drawer)
-        val dynamicColors = repository.getDynamicColorsEnabled()
-        val darkMode = isDarkThemeOn(this)
-        val statusBarColor = Colors.statusBarNormal(this, dynamicColors, darkMode)
-        val toolbarTextColor = Colors.toolbarTextColor(this, dynamicColors, darkMode)
-        toolbarLayout.setBackgroundColor(statusBarColor)
+        val toolbarTextColor = Colors.toolbarTextColor(this)
         
         val toolbar = toolbarLayout.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         toolbar.setTitleTextColor(toolbarTextColor)
@@ -77,7 +73,7 @@ class ShareActivity : AppCompatActivity() {
         
         // Set system status bar appearance
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
-            Colors.shouldUseLightStatusBar(dynamicColors, darkMode)
+            !isDarkThemeOn(this)
 
         // Show 'Back' button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -259,7 +255,7 @@ class ShareActivity : AppCompatActivity() {
         sendItem = menu.findItem(R.id.share_menu_send)
         
         // Tint menu icons based on theme
-        val toolbarTextColor = Colors.toolbarTextColor(this, repository.getDynamicColorsEnabled(), isDarkThemeOn(this))
+        val toolbarTextColor = Colors.toolbarTextColor(this)
         for (i in 0 until menu.size) {
             menu[i].icon?.setTint(toolbarTextColor)
         }

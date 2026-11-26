@@ -1,7 +1,6 @@
 package io.heckel.ntfy.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -135,11 +134,7 @@ class MainAdapter(
             }
             itemView.setOnClickListener { onClick(subscription) }
             itemView.setOnLongClickListener { onLongClick(subscription); true }
-            if (selected.contains(subscription.id)) {
-                itemView.setBackgroundColor(Colors.itemSelectedBackground(context))
-            } else {
-                itemView.setBackgroundColor(Color.TRANSPARENT)
-            }
+            itemView.isActivated = subscription.id in selected
         }
     }
 

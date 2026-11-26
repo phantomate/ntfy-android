@@ -29,6 +29,9 @@
         android:title="@string/detail_menu_notifications_disabled_forever"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/detail_menu_refresh"
+        android:title="@string/detail_menu_refresh" />
+    <item
         android:id="@+id/detail_menu_settings"
         android:title="@string/detail_menu_settings" />
     <item

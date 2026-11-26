@@ -587,7 +587,7 @@ interface NotificationDao {
     @Query("SELECT * FROM notification")
     suspend fun list(): List<Notification>
 
-    @Query("SELECT * FROM notification WHERE subscriptionId = :subscriptionId AND deleted != 1 ORDER BY timestamp DESC")
+    @Query("SELECT * FROM notification WHERE subscriptionId = :subscriptionId AND deleted != 1 ORDER BY timestamp ASC, rowid ASC")
     fun listFlow(subscriptionId: Long): Flow<List<Notification>>
 
     @Query("""
@@ -599,7 +599,7 @@ interface NotificationDao {
             OR message LIKE '%' || :query || '%' COLLATE NOCASE
             OR tags LIKE '%' || :query || '%' COLLATE NOCASE
         )
-        ORDER BY timestamp DESC
+        ORDER BY timestamp ASC, rowid ASC
     """)
     fun listFlowFiltered(subscriptionId: Long, query: String): Flow<List<Notification>>
 

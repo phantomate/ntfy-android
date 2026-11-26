@@ -151,11 +151,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
 
         // Action bar
         val toolbarLayout = findViewById<AppBarLayout>(R.id.app_bar_drawer)
-        val dynamicColors = repository.getDynamicColorsEnabled()
-        val darkMode = isDarkThemeOn(this)
-        val statusBarColor = Colors.statusBarNormal(this, dynamicColors, darkMode)
-        val toolbarTextColor = Colors.toolbarTextColor(this, dynamicColors, darkMode)
-        toolbarLayout.setBackgroundColor(statusBarColor)
+        val toolbarTextColor = Colors.toolbarTextColor(this)
         
         val toolbar = toolbarLayout.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         toolbar.setTitleTextColor(toolbarTextColor)
@@ -166,7 +162,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         
         // Set system status bar appearance
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
-            Colors.shouldUseLightStatusBar(dynamicColors, darkMode)
+            !isDarkThemeOn(this)
 
         // Floating action button ("+")
         fab = findViewById(R.id.fab)
@@ -175,10 +171,12 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         }
         
         // Add bottom padding to FAB to account for navigation bar
+        val fabMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+        val fabClearance = resources.getDimensionPixelSize(R.dimen.fab_size) + fabMargin
         ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val layoutParams = view.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-            layoutParams.bottomMargin = systemBars.bottom
+            layoutParams.bottomMargin = systemBars.bottom + fabMargin
             view.layoutParams = layoutParams
             insets
         }
@@ -209,7 +207,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         mainList.clipToPadding = false
         ViewCompat.setOnApplyWindowInsetsListener(mainList) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(bottom = systemBars.bottom)
+            v.updatePadding(bottom = systemBars.bottom + fabClearance)
             insets
         }
 
@@ -529,7 +527,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         this.menu = menu
         
         // Tint menu icons based on theme
-        val toolbarTextColor = Colors.toolbarTextColor(this, repository.getDynamicColorsEnabled(), isDarkThemeOn(this))
+        val toolbarTextColor = Colors.toolbarTextColor(this)
         for (i in 0 until menu.size) {
             menu[i].icon?.setTint(toolbarTextColor)
         }

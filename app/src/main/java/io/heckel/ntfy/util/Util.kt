@@ -219,16 +219,9 @@ fun decodeBytesMessage(notification: Notification): ByteArray {
     }
 }
 
-/**
- * See above; prepend emojis to title if the title is non-empty.
- * Otherwise, they are prepended to the message.
- */
 fun formatTitle(appBaseUrl: String?, subscription: Subscription, notification: Notification): String {
-    return if (notification.title != "") {
-        formatTitle(notification)
-    } else {
-        displayName(appBaseUrl, subscription)
-    }
+    val topicName = displayName(appBaseUrl, subscription)
+    return if (notification.title.isEmpty()) topicName else "$topicName · ${formatTitle(notification)}"
 }
 
 fun formatTitle(notification: Notification): String {

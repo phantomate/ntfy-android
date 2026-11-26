@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="16dp"
+        android:background="?attr/colorSurface"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.card.MaterialCardView
@@ -73,7 +74,7 @@
 
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_battery_ask_later"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_battery_button_remind_later"
@@ -81,14 +82,14 @@
 
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_battery_dontaskagain"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_battery_button_dismiss"
                         tools:layout_editor_absoluteX="142dp" tools:layout_editor_absoluteY="71dp"/>
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_battery_fix_now"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_battery_button_fix_now"
@@ -140,7 +141,7 @@
 
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_websocket_remind_later"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_websocket_button_remind_later"
@@ -148,7 +149,7 @@
 
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_websocket_dontaskagain"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_websocket_button_dismiss"
@@ -156,7 +157,7 @@
 
                 <com.google.android.material.button.MaterialButton
                         android:id="@+id/main_banner_websocket_enable"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/main_banner_websocket_button_enable_now"
@@ -208,7 +209,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/main_banner_websocket_reconnect_remind_later"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/main_banner_websocket_reconnect_button_remind_later"
@@ -216,7 +217,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/main_banner_websocket_reconnect_dontaskagain"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/main_banner_websocket_reconnect_button_dismiss"
@@ -224,7 +225,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/main_banner_websocket_reconnect_enable"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/main_banner_websocket_reconnect_button_enable_now"
@@ -268,10 +269,10 @@
                     android:layout_height="match_parent"
                     android:clickable="true"
                     android:focusable="true"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
+                    android:paddingStart="@dimen/topic_list_margin"
+                    android:paddingEnd="@dimen/topic_list_margin"
+                    android:paddingTop="@dimen/topic_card_gap"
                     android:clipToPadding="false"
-                    android:background="?android:attr/selectableItemBackground"
                     app:layoutManager="LinearLayoutManager"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -291,7 +292,7 @@
                     android:text="@string/main_no_subscriptions_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:padding="10dp" android:gravity="center_horizontal"
                     android:paddingStart="50dp" android:paddingEnd="50dp"/>
             <TextView
@@ -318,11 +319,12 @@
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="24dp"
+                android:layout_margin="@dimen/fab_margin"
                 android:contentDescription="@string/main_add_button_description"
                 android:src="@drawable/ic_add_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:fabCustomSize="@dimen/fab_size"
                 style="@style/FloatingActionButton"
         />
 

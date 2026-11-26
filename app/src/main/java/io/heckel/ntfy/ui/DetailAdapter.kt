@@ -150,11 +150,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
             } else {
                 tagsView.visibility = View.GONE
             }
-            if (selected.contains(notification.id)) {
-                cardView.setCardBackgroundColor(Colors.cardSelectedBackgroundColor(context))
-            } else {
-                cardView.setCardBackgroundColor(Colors.cardBackgroundColor(context))
-            }
+            cardView.isActivated = notification.id in selected
             val attachment = notification.attachment
             val attachmentFileStat = maybeFileStat(context, attachment?.contentUri)
             val iconFileStat = maybeFileStat(context, notification.icon?.contentUri)

@@ -64,7 +64,6 @@ import androidx.core.net.toUri
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import android.widget.ImageButton
-import com.google.android.material.color.MaterialColors
 
 class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSettingsListener, PublishFragment.PublishListener {
     private val viewModel by viewModels<DetailViewModel> {
@@ -146,13 +145,9 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         appBaseUrl = getString(R.string.app_base_url)
 
         val toolbarLayout = findViewById<View>(R.id.app_bar_drawer)
-        val dynamicColors = repository.getDynamicColorsEnabled()
-        val darkMode = isDarkThemeOn(this)
-        val statusBarColor = Colors.statusBarNormal(this, dynamicColors, darkMode)
-        toolbarLayout.setBackgroundColor(statusBarColor)
 
         // Set collapse icon (back arrow when search is expanded) with proper tint
-        toolbarTextColor = Colors.toolbarTextColor(this, dynamicColors, darkMode)
+        toolbarTextColor = Colors.toolbarTextColor(this)
         val collapseIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)?.mutate()
         collapseIcon?.setTint(toolbarTextColor)
 
@@ -165,23 +160,7 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         
         // Set system status bar appearance
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
-            Colors.shouldUseLightStatusBar(dynamicColors, darkMode)
-
-        // Set detail activity background: use theme background for dynamic colors, static gray for non-dynamic
-        val detailContentLayout = findViewById<View>(R.id.detail_content_layout)
-        if (repository.getDynamicColorsEnabled()) {
-            detailContentLayout.setBackgroundColor(
-                MaterialColors.getColor(
-                    this,
-                    android.R.attr.colorBackground,
-                    ContextCompat.getColor(this, R.color.detail_activity_background)
-                )
-            )
-        } else {
-            detailContentLayout.setBackgroundColor(
-                ContextCompat.getColor(this, R.color.detail_activity_background)
-            )
-        }
+            !isDarkThemeOn(this)
 
         // Show 'Back' button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -308,16 +287,9 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         val onNotificationLongClick = { n: Notification -> onNotificationLongClick(n) }
 
         adapter = DetailAdapter(this, lifecycleScope, repository, onNotificationClick, onNotificationLongClick)
+        adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         mainList = findViewById(R.id.detail_notification_list)
         mainList.adapter = adapter
-        
-        // Apply window insets to ensure content is not covered by navigation bar
-        mainList.clipToPadding = false
-        ViewCompat.setOnApplyWindowInsetsListener(mainList) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(bottom = systemBars.bottom)
-            insets
-        }
 
         // Observe filtered notifications (filtered by search query)
         val noSearchResultsText: TextView = findViewById(R.id.detail_no_notifications_text)
@@ -325,8 +297,14 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         val howToLink: View = findViewById(R.id.detail_how_to_link)
         viewModel.listFiltered(subscriptionId).observe(this) {
             it?.let { notifications ->
-                // Show list view
-                adapter.submitList(notifications.toMutableList())
+                val newestId = notifications.lastOrNull()?.id
+                val followNewMessages = newestId != null && newestId != adapter.currentList.lastOrNull()?.id &&
+                    mainList.childCount > 0 && !mainList.canScrollVertically(1)
+                adapter.submitList(notifications) {
+                    if (followNewMessages && !mainList.canScrollVertically(1)) {
+                        mainList.scrollToPosition(notifications.lastIndex)
+                    }
+                }
                 if (notifications.isEmpty()) {
                     mainListContainer.visibility = View.GONE
                     noEntriesText.visibility = View.VISIBLE
@@ -375,16 +353,6 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
         itemTouchHelper.attachToRecyclerView(mainList)
 
-        // Scroll up when new notification is added
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (positionStart == 0) {
-                    Log.d(TAG, "$itemCount item(s) inserted at 0, scrolling to the top")
-                    mainList.scrollToPosition(positionStart)
-                }
-            }
-        })
-
         // React to changes in fast delivery setting
         repository.getSubscriptionIdsWithInstantStatusLiveData().observe(this) {
             SubscriberServiceManager.refresh(this)
@@ -417,7 +385,8 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         messageBarExpandButton = messageBar.findViewById(R.id.message_bar_expand_button)
 
         // Message bar enabled: Show message bar, hide FAB
-        if (repository.getMessageBarEnabled()) {
+        val messageBarEnabled = repository.getMessageBarEnabled()
+        if (messageBarEnabled) {
             fab.visibility = View.GONE
             messageBar.visibility = View.VISIBLE
 
@@ -430,17 +399,6 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
             messageBarExpandButton.setOnClickListener {
                 openPublishDialog(messageBarText.text.toString())
             }
-
-            // Handle window insets for navigation bar and keyboard
-            val contentLayout = findViewById<View>(R.id.detail_content_layout)
-            ViewCompat.setOnApplyWindowInsetsListener(contentLayout) { view, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-                // Use the larger of navigation bar or keyboard height
-                val bottomPadding = maxOf(systemBars.bottom, ime.bottom)
-                view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, bottomPadding)
-                insets
-            }
         } else {
             // Show FAB, hide message bar
             fab.visibility = View.VISIBLE
@@ -449,16 +407,28 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
             fab.setOnClickListener {
                 openPublishDialog("")
             }
-
-            // Add bottom padding to FAB to account for navigation bar
-            ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                val layoutParams = view.layoutParams as androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams
-                layoutParams.bottomMargin = systemBars.bottom + resources.getDimensionPixelSize(R.dimen.fab_margin)
-                view.layoutParams = layoutParams
-                insets
-            }
         }
+
+        val fabMargin = resources.getDimensionPixelSize(R.dimen.fab_margin)
+        val fabClearance = resources.getDimensionPixelSize(R.dimen.fab_size) + fabMargin
+        val contentLayout = findViewById<View>(R.id.detail_content_layout)
+        ViewCompat.setOnApplyWindowInsetsListener(contentLayout) { view, insets ->
+            val systemBarsBottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            val keyboardBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            if (messageBarEnabled) {
+                view.updatePadding(bottom = maxOf(systemBarsBottom, keyboardBottom))
+            } else {
+                mainList.updatePadding(bottom = maxOf(systemBarsBottom + fabClearance, keyboardBottom))
+                val params = fab.layoutParams as androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams
+                val bottomMargin = systemBarsBottom + fabMargin
+                if (params.bottomMargin != bottomMargin) {
+                    params.bottomMargin = bottomMargin
+                    fab.layoutParams = params
+                }
+            }
+            insets
+        }
+        ViewCompat.requestApplyInsets(contentLayout)
     }
 
     private fun openPublishDialog(initialMessage: String) {
@@ -650,6 +620,7 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun showHideOtherMenuItems() {
         if (!this::menu.isInitialized) return
         runOnUiThread {
+            menu.findItem(R.id.detail_menu_refresh)?.isVisible = !isSearchActive
             menu.findItem(R.id.detail_menu_settings)?.isVisible = !isSearchActive
             menu.findItem(R.id.detail_menu_clear)?.isVisible = !isSearchActive
             menu.findItem(R.id.detail_menu_test)?.isVisible = !isSearchActive
@@ -679,6 +650,13 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.detail_menu_refresh -> {
+                if (this::mainListContainer.isInitialized && !mainListContainer.isRefreshing) {
+                    mainListContainer.isRefreshing = true
+                    refresh()
+                }
+                true
+            }
             R.id.detail_menu_test -> {
                 onTestClick()
                 true
@@ -814,7 +792,6 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
                 }
                 runOnUiThread {
                     Toast.makeText(this@DetailActivity, toastMessage, Toast.LENGTH_LONG).show()
-                    mainListContainer.isRefreshing = false
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching notifications for ${topicShortUrl(subscriptionBaseUrl, subscriptionTopic)}: ${e.stackTrace}", e)
@@ -822,6 +799,9 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
                     Toast
                         .makeText(this@DetailActivity, getString(R.string.refresh_message_error_one, e.message), Toast.LENGTH_LONG)
                         .show()
+                }
+            } finally {
+                runOnUiThread {
                     mainListContainer.isRefreshing = false
                 }
             }

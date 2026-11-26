@@ -18,11 +18,10 @@
         android:id="@+id/detail_content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/detail_activity_background"
+        android:background="?attr/colorSurface"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            style="@style/CardViewBackground"
             android:id="@+id/detail_notification_list_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -37,11 +36,12 @@
                 android:layout_height="match_parent"
                 android:clickable="true"
                 android:focusable="true"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:paddingStart="@dimen/topic_list_margin"
+                android:paddingEnd="@dimen/topic_list_margin"
+                android:paddingTop="@dimen/topic_card_gap"
                 android:clipToPadding="false"
-                android:background="?android:attr/selectableItemBackground"
-                app:layoutManager="LinearLayoutManager"/>
+                app:layoutManager="LinearLayoutManager"
+                app:stackFromEnd="true" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout
@@ -62,7 +62,7 @@
                 android:text="@string/detail_no_notifications_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:padding="10dp" android:gravity="center_horizontal"
                 android:paddingStart="50dp" android:paddingEnd="50dp"/>
         <TextView
@@ -109,12 +109,13 @@
             android:id="@+id/detail_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="24dp"
+            android:layout_margin="@dimen/fab_margin"
             android:contentDescription="@string/detail_fab_publish_description"
             android:src="@drawable/ic_create_white_24dp"
             android:visibility="gone"
             app:layout_anchor="@id/detail_content_layout"
             app:layout_anchorGravity="bottom|end"
+            app:fabCustomSize="@dimen/fab_size"
             style="@style/FloatingActionButton"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

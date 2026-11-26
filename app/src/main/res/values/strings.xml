@@ -181,6 +181,8 @@
     <string name="detail_item_tags">Tags: %1$s</string>
     <string name="detail_item_snack_deleted">Notification deleted</string>
     <string name="detail_item_snack_undo">Undo</string>
+    <string name="detail_menu_refresh">Refresh</string>
+    <string name="detail_item_menu_options">Message options</string>
     <string name="detail_item_menu_open">Open file</string>
     <string name="detail_item_menu_delete">Delete file</string>
     <string name="detail_item_menu_download">Download file</string>

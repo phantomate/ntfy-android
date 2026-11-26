@@ -78,6 +78,8 @@
     <string name="detail_item_tags">Tags: %1$s</string>
     <string name="detail_item_snack_deleted">Benachrichtigung gelöscht</string>
     <string name="detail_item_snack_undo">Rückgängig</string>
+    <string name="detail_menu_refresh">Aktualisieren</string>
+    <string name="detail_item_menu_options">Nachrichtenoptionen</string>
     <string name="detail_item_menu_open">Datei öffnen</string>
     <string name="detail_item_menu_delete">Datei löschen</string>
     <string name="detail_item_menu_download">Datei herunterladen</string>
